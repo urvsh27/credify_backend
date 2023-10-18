@@ -31,9 +31,18 @@ const userRolesMessages = {
   noAdminAccess : 'You don\'t have admin access.',
 }
 
+const creditCardMessages = {
+  userCreditCardAlreadyExists : 'User credit card already exists',
+  cardVerificationSuccess : 'Credit card verified successfully.',
+  cardVerificationFail : 'Unable to verify the card. Please check your card number.',
+  cardCreationFail : 'Credit card creation failed. Please try again later.',
+  userCreditCardDetailsFound : 'User credit card details found successfully.', 
+}
+
 module.exports = {
   generalMessages,
   userMessages,
   roleMessages,
   userRolesMessages,
+  creditCardMessages
 };

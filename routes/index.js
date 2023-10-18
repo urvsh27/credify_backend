@@ -6,6 +6,7 @@ const usersController = require('../controllers/usersController');
 const authController = require('../middlewares/auth');
 // Import files
 const validator = require('../middlewares/validator');
+const { creditCardController } = require('../controllers');
 // Router object
 const router = express.Router();
 
@@ -23,5 +24,11 @@ router.post('/admin-login', validator('login'), usersController.adminLogin);
 router.get('/user-auth', authController.jwtUserAuthValidate, usersController.dashboard);
 // Dashboard
 router.get('/admin-auth', authController.jwtAdminAuthValidate, usersController.dashboard);
+// Add card
+router.post('/add-card', authController.jwtUserAuthValidate, creditCardController.addCreditCard);
+// Get all user cards
+router.get('/cards', authController.jwtUserAuthValidate, creditCardController.getUserCreditCards);
+// Get all users list
+router.get('/all-users', authController.jwtAdminAuthValidate, usersController.getAllUsers);
 
 module.exports = router;

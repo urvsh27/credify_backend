@@ -1,0 +1,18 @@
+# Paste below text in .env file if .env file is empty.
+
+PORT = 8080 
+
+# postgres://mainvideoserver:iISHa7GtTeu3@ep-green-recipe-78433053-pooler.us-east-2.aws.neon.tech/neondb
+
+DB_USERNAME = 'mainvideoserver'
+DB_PASSWORD = 'iISHa7GtTeu3'
+DB_NAME = 'neondb'
+DB_HOST =  'ep-green-recipe-78433053-pooler.us-east-2.aws.neon.tech'
+DB_DIALECT = 'postgres'
+
+ENVIRONMENT = 'local'
+DB_URL = 'postgres://mainvideoserver:iISHa7GtTeu3@ep-green-recipe-78433053-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require'
+
+JWT_SECRET_KEY = 'Urvish@app'
+
+

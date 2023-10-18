@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   class Users extends Model {
     static associate(models) {
       Users.hasMany(models.user_roles, {foreignKey: "userId"});
+      Users.hasMany(models.credit_cards, {foreignKey: "userId"});
     }
   }
   Users.init(
@@ -42,11 +43,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         defaultValue: false,
       },
-      payment_status: {
-        type: DataTypes.BOOLEAN,
-        allowNull: true,
-        defaultValue: false,
-      },
     },
     {
       sequelize,
@@ -76,11 +72,6 @@ module.exports = (sequelize, DataTypes) => {
           fields: ['deleted'],
           using: 'BTREE',
           name: 'users_deleted_btree_index',
-        },
-        {
-          fields: ['payment_status'],
-          using: 'BTREE',
-          name: 'users_payment_status_btree_index',
         },
       ],
     }

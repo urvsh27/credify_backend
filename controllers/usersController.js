@@ -2,10 +2,6 @@
 const usersModel = require('../models').users;
 const rolesModel = require('../models').roles;
 const userRolesModel = require('../models').user_roles;
-const userPreferencesModel = require('../models').user_preferences;
-const languagesModel = require('../models').languages;
-const exercisesModel = require('../models').exercises;
-const resultsModel = require('../models').results;
 
 //Import controllers
 const globalController = require('./globalController');
@@ -292,127 +288,6 @@ module.exports = {
     } catch (error) {
       errorArrRes.message = error.message;
       res.status(400).send(errorArrRes);
-    }
-  },
-
-  /*
-   User preferences
-  */
-  async getUserPreferences(req, res) {
-    let successArrRes = successArrayResponse;
-    let errorArrRes = errorArrayResponse;
-    try {
-      const userId = req.headers.loggedInUserId;
-      let userPreferences = [];
-      await languagesModel
-        .findAll({
-          attributes: ['id', 'name'],
-          where: { activated: true, deleted: false },
-          include:[{
-            model: userPreferencesModel,
-            attributes: ['id'],
-            where: { userId: userId },
-            required: false,
-          },],
-          raw: false,
-        })
-        .then((userPreferencesResponse) => {
-          userPreferences = userPreferencesResponse;
-        })
-        .catch((error) => {
-          throw new Error(error.message);
-        });
-      userPreferences = userPreferences.map((item) => ({
-        languageId: item.id,
-        languageName: item.name,
-        userPreferences: IsNotNullOrEmpty(item['user_preferences'])? true : false 
-      }));
-      successArrRes.message = languagesMessages.languagesFound;
-      successArrRes.data = userPreferences;
-      res.status(201).send(successArrRes);
-    } catch (error) {
-      errorArrRes.message = error.message;
-      res.status(400).send(errorArrRes);
-    }
-  },
-
-  /*
-  Create preferences
-  */
-  async createPreference(req, res) {
-    let successObjectRes = successObjectResponse;
-    let errorObjectRes = errorObjectResponse;
-    try {
-      let newPreferenceId = '';
-      const languageDetails = await globalController.getModuleDetails(
-        languagesModel,
-        'findOne',
-        { id: req.body.languageId },
-        ['id'],
-        true
-      );
-      if (IsNotNullOrEmpty(languageDetails.id)) {
-        const userPreferenceDetails = await globalController.getModuleDetails(
-          userPreferencesModel,
-          'findOne',
-          { languageId: req.body.languageId, userId : req.headers.loggedInUserId },
-          ['id'],
-          true
-        );
-        if(IsNullOrEmpty(userPreferenceDetails.id)){
-          await db.sequelize.transaction(
-            {
-              deferrable: Sequelize.Deferrable.SET_DEFERRED,
-            },
-            async (t1) => {
-              await userPreferencesModel
-                .create(
-                  {
-                    languageId: req.body.languageId,
-                    userId: req.headers.loggedInUserId,
-                  },
-                  {
-                    transaction: t1,
-                  }
-                )
-                .then((newPreference) => {
-                  if (IsNotNullOrEmpty(newPreference.id)) {
-                    newPreferenceId = newPreference.id;
-                  } else {
-                    throw new Error(
-                      userPreferenceMessages.userPreferenceCreateFail
-                    );
-                  }
-                })
-                .catch(async (error) => {
-                  let message =
-                    await globalController.getMessageFromErrorInstance(error);
-                  if (message) {
-                    throw new Error(message);
-                  } else {
-                    throw new Error(error.message);
-                  }
-                });
-            }
-          );
-        }else{
-          throw new Error(userPreferenceMessages.userPreferenceAlreadyExists)
-        }
-      } else {
-        throw new Error(languagesMessages.languageNotFound);
-      }
-      successObjectRes.message = userPreferenceMessages.userPreferenceCreateSuccess;
-      successObjectRes.data = await globalController.getModuleDetails(
-        userPreferencesModel,
-        'findOne',
-        { id: newPreferenceId },
-        ['id'],
-        true
-      );
-      res.status(201).send(successObjectRes);
-    } catch (error) {
-      errorObjectRes.message = error.message;
-      res.status(400).send(errorObjectRes);
     }
   },
 };

@@ -574,4 +574,28 @@ module.exports = {
       throw new Error(error.message);
     }
   },
+
+
+  /*
+  * Luhn card validator
+  * CardNumber : integer
+  */
+  async luhnCardValidator(cardNumber) {
+    const cardNumberStr = cardNumber.toString();
+    let sum = 0;
+    let double = false;
+    for (let i = cardNumberStr.length - 1; i >= 0; i--) {
+        let digit = parseInt(cardNumberStr[i]);
+        if (double) {
+            digit *= 2;
+            if (digit > 9) {
+                digit -= 9;
+            }
+        }
+        sum += digit;
+        double = !double;
+    }
+    console.log('luhn status', sum % 10 === 0);
+    return sum % 10 === 0 ? true : false;
+},
 };
